@@ -3,7 +3,7 @@ variable "PROFILE" {
     default = null
 }
 
-vaiable "LOCAL_HOST_PRI_KEY_FILE" {
+variable "LOCAL_HOST_PRI_KEY_FILE" {
     type = string
     default = ""
 }
