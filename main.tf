@@ -9,21 +9,6 @@ terraform {
     }
 }
 
-resource "null_resource" "TEST" {
-    triggers = {
-        always_run = timestamp()
-    }
-
-    provisioner "local-exec" {
-        interpreter = ["bash", "-c"]
-        command = <<-EOF
-        ls -al
-        ls -al "${var.LOCAL_HOST_PRI_KEY_FILE}"
-        echo "FUCK"
-        EOF
-    }
-}
-
 resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     count = (length(var.REMOTE_EXECUTE_COMMAND) > 0 ? 1 : 0)
 
@@ -55,7 +40,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     }
 
     provisioner "remote-exec" {
-        inline = ["${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
+        inline = ["${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ; do sleep 5; done"]
     }
 
     provisioner "remote-exec" {
@@ -79,7 +64,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     provisioner "remote-exec" {
-        inline = ["${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
+        inline = ["${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ; do sleep 5; done"]
     }
 
     provisioner "remote-exec" {
