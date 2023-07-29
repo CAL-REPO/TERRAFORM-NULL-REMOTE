@@ -3,18 +3,22 @@ variable "PROFILE" {
     default = null
 }
 
+vaiable "LOCAL_HOST_PRI_KEY_FILE" {
+    type = string
+    default = ""
+}
 
 variable "REMOTE_HOST" {
     type = object({
-        IP = string
         USER = string
-        PRI_KEY_FILE = string
+        USER_DIR = string
+        IP = string
     })
 
     default = {
-        IP = ""
         USER = ""
-        PRI_KEY_FILE = ""
+        USER_DIR = ""
+        IP = ""
     }
 }
 
