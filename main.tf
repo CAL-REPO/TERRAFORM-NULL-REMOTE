@@ -25,6 +25,9 @@ resource "null_resource" "BASE_RESOURCE_FOR_REMOTE_EXECUTION" {
 resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     count = (length(var.REMOTE_EXECUTE_COMMAND) > 0 ? 1 : 0)
     depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
+    triggers = {
+        always_run = timestamp()
+    }
 
     connection {
         host        = "${var.REMOTE_HOST.IP}"
@@ -41,6 +44,9 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
 resource "null_resource" "REMOTE_CREATE_FILE" {
     count = (length(var.REMOTE_CREATE_FILEs) > 0 ? length(var.REMOTE_CREATE_FILEs) : 0)
     depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
+    triggers = {
+        always_run = timestamp()
+    }
 
     connection {
         host        = "${var.REMOTE_HOST.IP}"
@@ -66,7 +72,10 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
 resource "null_resource" "REMOTE_SEND_FILE" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
     depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
-
+    triggers = {
+        always_run = timestamp()
+    }
+    
     connection {
         host        = "${var.REMOTE_HOST.IP}"
         type        = "ssh"
