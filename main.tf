@@ -9,22 +9,22 @@ terraform {
     }
 }
 
-resource "null_resource" "TEST" {
+resource "null_resource" "BASE_RESOURCE_FOR_REMOTE_EXECUTION" {
     triggers = {
         always_run = timestamp()
     }
 
     provisioner "local-exec" {
         interpreter = ["bash", "-c"]
-        on_failure = continue # Add this line to ignore errors
         command = <<-EOF
-        echo "TEST"
+        echo "This local-exec block should be set to recognize private_key on remote-exec null_resource"
         EOF
     }
 }
 
 resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     count = (length(var.REMOTE_EXECUTE_COMMAND) > 0 ? 1 : 0)
+    depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
 
     connection {
         host        = "${var.REMOTE_HOST.IP}"
@@ -40,6 +40,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
 
 resource "null_resource" "REMOTE_CREATE_FILE" {
     count = (length(var.REMOTE_CREATE_FILEs) > 0 ? length(var.REMOTE_CREATE_FILEs) : 0)
+    depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
 
     connection {
         host        = "${var.REMOTE_HOST.IP}"
@@ -54,7 +55,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     }
 
     provisioner "remote-exec" {
-        inline = ["${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ; do sleep 5; done"]
+        inline = ["while [ ! -f ${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
     }
 
     provisioner "remote-exec" {
@@ -64,6 +65,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
 
 resource "null_resource" "REMOTE_SEND_FILE" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
+    depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
 
     connection {
         host        = "${var.REMOTE_HOST.IP}"
@@ -78,7 +80,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     provisioner "remote-exec" {
-        inline = ["${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ; do sleep 5; done"]
+        inline = ["while [ ! -f ${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
     }
 
     provisioner "remote-exec" {
