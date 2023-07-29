@@ -38,6 +38,14 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
         destination = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
         content = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
     }
+
+    provisioner "remote-exec" {
+        inline = ["${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
+    }
+
+    provisioner "remote-exec" {
+        inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"
+    }
 }
 
 resource "null_resource" "REMOTE_SEND_FILE" {
@@ -53,5 +61,13 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     provisioner "file" {
         source = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         destination = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
+    }
+
+    provisioner "remote-exec" {
+        inline = ["${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
+    }
+
+    provisioner "remote-exec" {
+        inline = "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"
     }
 }
