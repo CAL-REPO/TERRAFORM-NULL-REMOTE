@@ -23,9 +23,18 @@ variable "REMOTE_EXECUTE_COMMAND" {
     default = []
 }
 
-variable "REMOTE_CREATE_FILE" {
+variable "REMOTE_CREATE_FILEs" {
     type = list(object({
         CONTENT = string
+        DESTINATION = string
+    }))
+
+    default = []
+}
+
+variable "REMOTE_SEND_FILEs" {
+    type = list(object({
+        SOURCE = string
         DESTINATION = string
     }))
 
