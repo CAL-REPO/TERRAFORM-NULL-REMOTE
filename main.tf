@@ -9,6 +9,21 @@ terraform {
     }
 }
 
+resource "null_resource" "TEST" {
+    triggers = {
+        always_run = timestamp()
+    }
+
+    provisioner "local-exec" {
+        interpreter = ["bash", "-c"]
+        command = <<-EOF
+        ls -al
+        ls -al "${var.LOCAL_HOST_PRI_KEY_FILE}"
+        echo "FUCK"
+        EOF
+    }
+}
+
 resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     count = (length(var.REMOTE_EXECUTE_COMMAND) > 0 ? 1 : 0)
 
