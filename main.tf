@@ -16,7 +16,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
         host        = "${var.REMOTE_HOST.IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
-        private_key = "${var.LOCAL_HOST_PRI_KEY_FILE}"  # Update with the path to your private key file
+        private_key = file("${path.module}/${var.LOCAL_HOST_PRI_KEY_FILE_NAME}")  # Update with the path to your private key file
     }
 
     provisioner "remote-exec" {
@@ -31,7 +31,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
         host        = "${var.REMOTE_HOST.IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
-        private_key = "${var.LOCAL_HOST_PRI_KEY_FILE}"  # Update with the path to your private key file
+        private_key = file("${path.module}/${var.LOCAL_HOST_PRI_KEY_FILE_NAME}")  # Update with the path to your private key file
     }
 
     provisioner "file" {
@@ -55,7 +55,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
         host        = "${var.REMOTE_HOST.IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
-        private_key = "${var.LOCAL_HOST_PRI_KEY_FILE}"  # Update with the path to your private key file
+        private_key = file("${path.module}/${var.LOCAL_HOST_PRI_KEY_FILE_NAME}")  # Update with the path to your private key file
     }
 
     provisioner "file" {
