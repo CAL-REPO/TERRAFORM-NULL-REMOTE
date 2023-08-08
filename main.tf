@@ -27,7 +27,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
 
     connection {
-        host        = "${var.REMOTE_HOST.IP}"
+        host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
@@ -43,7 +43,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
 
     connection {
-        host        = "${var.REMOTE_HOST.IP}"
+        host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
@@ -68,7 +68,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
     
     connection {
-        host        = "${var.REMOTE_HOST.IP}"
+        host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
@@ -93,7 +93,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND, null_resource.REMOTE_CREATE_FILE, null_resource.REMOTE_SEND_FILE ]
 
     connection {
-        host        = "${var.REMOTE_HOST.IP}"
+        host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file

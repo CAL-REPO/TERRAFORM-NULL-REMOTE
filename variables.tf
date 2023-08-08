@@ -12,15 +12,19 @@ variable "REMOTE_HOST" {
     type = object({
         USER = string
         USER_DIR = string
-        IP = string
-        PRI_KEY_FILE = string
+        EXTERNAL_IP = string
+        ANSIBLE_IP = optional(string)
+        PRI_KEY_DIR = optional(string)
+        PRI_KEY_FILE_NAME = optional(string)
     })
 
     default = {
         USER = ""
         USER_DIR = ""
-        IP = ""
-        PRI_KEY_FILE = ""
+        EXTERNAL_IP = ""
+        ANSIBLE_IP = ""
+        PRI_KEY_DIR = ""
+        PRI_KEY_FILE_NAME = ""
     }
 }
 
