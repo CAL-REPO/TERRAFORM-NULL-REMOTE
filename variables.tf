@@ -24,7 +24,7 @@ variable "REMOTE_HOST" {
     }
 }
 
-variable "REMOTE_EXECUTE_COMMAND" {
+variable "REMOTE_PRE_EXECUTE_COMMAND" {
     type = list(string)
     default = []
 }
@@ -46,5 +46,10 @@ variable "REMOTE_SEND_FILEs" {
         COMMAND = optional(list(string))
     }))
 
+    default = []
+}
+
+variable "REMOTE_EXECUTE_COMMAND" {
+    type = list(string)
     default = []
 }
