@@ -73,7 +73,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     }
 
     provisioner "remote-exec" {
-        inline = ["if [ ! -d ${dirname(var.REMOTE_CREATE_FILEs[count.index].DESTINATION)} ]; then mkdir -p ${dirname(var.REMOTE_CREATE_FILEs[count.index].DESTINATION)}; fi"]
+        inline = ["sudo mkdir -p ${dirname(var.REMOTE_CREATE_FILEs[count.index].DESTINATION)}"]
     }
 
     provisioner "file" {
@@ -108,7 +108,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     provisioner "remote-exec" {
-        inline = ["if [ ! -d ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)} ]; then mkdir -p ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)}; fi"]
+        inline = ["sudo mkdir -p ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)}"]
     }
 
     provisioner "file" {
