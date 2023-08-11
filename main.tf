@@ -46,7 +46,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     }
 
     triggers = {
-        COMMAND = "${var.REMOTE_PRE_EXECUTE_COMMAND[count.index]}"
+        COMMAND = base64encode("${var.REMOTE_PRE_EXECUTE_COMMAND}")
     }
 
     # provisioner "remote-exec" {
@@ -54,7 +54,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     # }
 
     provisioner "remote-exec" {
-        inline = [jsondecode("${self.triggers.COMMAND}")]
+        inline = [base64decode("${self.triggers.COMMAND}")]
     }
 
 }
@@ -66,7 +66,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     triggers = {
         CONTENT = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
         DESTINATION = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
-        COMMAND = jsonencode("${var.REMOTE_CREATE_FILEs[count.index].COMMAND}")
+        COMMAND = base64encode("${var.REMOTE_CREATE_FILEs[count.index].COMMAND}")
     }
 
     connection {
@@ -94,7 +94,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     # }
 
     provisioner "remote-exec" {
-        inline = [jsondecode("${self.triggers.COMMAND}")]
+        inline = [base64decode("${self.triggers[count.index].COMMAND}")]
     }
 }
 
@@ -112,7 +112,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     triggers = {
         SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
-        COMMAND = jsonencode("${var.REMOTE_SEND_FILEs[count.index].COMMAND}")
+        COMMAND = base64encode("${var.REMOTE_SEND_FILEs[count.index].COMMAND}")
     }
 
     provisioner "remote-exec" {
@@ -133,7 +133,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     # }
 
     provisioner "remote-exec" {
-        inline = [jsondecode("${self.triggers.COMMAND}")]
+        inline = [base64decode("${self.triggers[count.index].COMMAND}")]
     }
 
 }
@@ -150,11 +150,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     }
 
     triggers = {
-        COMMAND = jsonencode("${var.REMOTE_EXECUTE_COMMAND[count.index]}")
-    }
-
-    provisioner "remote-exec" {
-        inline = "${var.REMOTE_EXECUTE_COMMAND}"
+        COMMAND = base64encode("${var.REMOTE_EXECUTE_COMMAND}")
     }
 
     # provisioner "remote-exec" {
@@ -162,6 +158,6 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     # }
 
     provisioner "remote-exec" {
-        inline = [jsondecode("${self.triggers.COMMAND}")]
+        inline = [base64decode("${self.triggers.COMMAND}")]
     }
 }
