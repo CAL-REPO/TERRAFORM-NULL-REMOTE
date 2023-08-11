@@ -45,14 +45,29 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
-    provisioner "remote-exec" {
-        inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
+    triggers = {
+        COMMAND = jsonencode("${var.REMOTE_PRE_EXECUTE_COMMAND[count.index]}")
     }
+
+    # provisioner "remote-exec" {
+    #     inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
+    # }
+
+    provisioner "remote-exec" {
+        inline = jsondecode("${self.triggers.COMMAND}")
+    }
+
 }
 
 resource "null_resource" "REMOTE_CREATE_FILE" {
     count = (length(var.REMOTE_CREATE_FILEs) > 0 ? length(var.REMOTE_CREATE_FILEs) : 0)
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
+
+    triggers = {
+        CONTENT = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
+        DESTINATION = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
+        COMMAND = jsonencode("${var.REMOTE_CREATE_FILEs[count.index].COMMAND}")
+    }
 
     connection {
         host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
@@ -74,20 +89,30 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
         inline = ["while [ ! -f ${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
     }
 
+    # provisioner "remote-exec" {
+    #     inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"
+    # }
+
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"
+        inline = jsondecode("${self.triggers.COMMAND}")
     }
 }
 
 resource "null_resource" "REMOTE_SEND_FILE" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
-    
+
     connection {
         host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
+    }
+
+    triggers = {
+        SOURCE = "${var.REMOTE_SEND_FILEs[count.index].CONTENT}"
+        DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
+        COMMAND = jsonencode("${var.REMOTE_SEND_FILEs[count.index].COMMAND}")
     }
 
     provisioner "remote-exec" {
@@ -103,9 +128,14 @@ resource "null_resource" "REMOTE_SEND_FILE" {
         inline = ["while [ ! -f ${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
     }
 
+    # provisioner "remote-exec" {
+    #     inline = "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"
+    # }
+
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"
+        inline = jsondecode("${self.triggers.COMMAND}")
     }
+
 }
 
 resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
@@ -119,7 +149,19 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
+    triggers = {
+        COMMAND = jsonencode("${var.REMOTE_EXECUTE_COMMAND[count.index]}")
+    }
+
     provisioner "remote-exec" {
         inline = "${var.REMOTE_EXECUTE_COMMAND}"
+    }
+
+    # provisioner "remote-exec" {
+    #     inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
+    # }
+
+    provisioner "remote-exec" {
+        inline = jsondecode("${self.triggers.COMMAND}")
     }
 }
