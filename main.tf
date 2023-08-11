@@ -49,12 +49,8 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
         COMMAND = base64encode(join(",", "${var.REMOTE_PRE_EXECUTE_COMMAND}"))
     }
 
-    # provisioner "remote-exec" {
-    #     inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
-    # }
-
     provisioner "remote-exec" {
-        inline = ["${var.REMOTE_PRE_EXECUTE_COMMAND}"]
+        inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
     }
 
 }
@@ -89,12 +85,8 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
         inline = ["while [ ! -f ${var.REMOTE_CREATE_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
     }
 
-    # provisioner "remote-exec" {
-    #     inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"
-    # }
-
     provisioner "remote-exec" {
-        inline = [base64decode("${self.triggers[count.index].COMMAND}")]
+        inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"
     }
 }
 
@@ -128,12 +120,8 @@ resource "null_resource" "REMOTE_SEND_FILE" {
         inline = ["while [ ! -f ${var.REMOTE_SEND_FILEs[count.index].DESTINATION} ]; do sleep 5; done"]
     }
 
-    # provisioner "remote-exec" {
-    #     inline = "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"
-    # }
-
     provisioner "remote-exec" {
-        inline = [base64decode("${self.triggers[count.index].COMMAND}")]
+        inline = "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"
     }
 
 }
@@ -153,11 +141,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
         COMMAND = base64encode(join(",", "${var.REMOTE_EXECUTE_COMMAND}"))
     }
 
-    # provisioner "remote-exec" {
-    #     inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
-    # }
-
     provisioner "remote-exec" {
-        inline = ["${var.REMOTE_EXECUTE_COMMAND}"]
+        inline = "${var.REMOTE_EXECUTE_COMMAND}"
     }
 }
