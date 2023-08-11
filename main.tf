@@ -46,7 +46,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     }
 
     triggers = {
-        COMMAND = base64encode("${var.REMOTE_PRE_EXECUTE_COMMAND}")
+        COMMAND = base64encode(join(",", "${var.REMOTE_PRE_EXECUTE_COMMAND}"))
     }
 
     # provisioner "remote-exec" {
@@ -54,7 +54,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     # }
 
     provisioner "remote-exec" {
-        inline = [base64decode("${self.triggers.COMMAND}")]
+        inline = ["${var.REMOTE_PRE_EXECUTE_COMMAND}"]
     }
 
 }
@@ -150,7 +150,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     }
 
     triggers = {
-        COMMAND = base64encode("${var.REMOTE_EXECUTE_COMMAND}")
+        COMMAND = base64encode(join(",", "${var.REMOTE_EXECUTE_COMMAND}"))
     }
 
     # provisioner "remote-exec" {
@@ -158,6 +158,6 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     # }
 
     provisioner "remote-exec" {
-        inline = [base64decode("${self.triggers.COMMAND}")]
+        inline = ["${var.REMOTE_EXECUTE_COMMAND}"]
     }
 }
