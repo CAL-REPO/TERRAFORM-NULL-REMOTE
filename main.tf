@@ -90,13 +90,11 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     }
 }
 
-data "template_file" "REMOTE_SEND_FILE_DATA" {
+data "external" "REMOTE_SEND_FILE_DATA" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
 
-    template = <<-EOF
-    ${file("${var.REMOTE_SEND_FILEs[count.index].SOURCE}")}
-    EOF
+    program = ["bash", "-c", "cat ${var.REMOTE_SEND_FILEs[count.index].SOURCE}"]
 }
 
 resource "null_resource" "REMOTE_SEND_FILE" {
@@ -111,7 +109,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     triggers = {
-        SOURCE_DATA = "${data.template_file.REMOTE_SEND_FILE_DATA[count.index]}"
+        SOURCE_DATA = "${data.external.REMOTE_SEND_FILE_DATA.result[count.index]}"
         SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
         COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
