@@ -13,18 +13,12 @@ variable "REMOTE_HOST" {
         USER = string
         USER_DIR = string
         EXTERNAL_IP = string
-        ANSIBLE_IP = optional(string)
-        PRI_KEY_DIR = optional(string)
-        PRI_KEY_FILE_NAME = optional(string)
     })
 
     default = {
         USER = ""
         USER_DIR = ""
         EXTERNAL_IP = ""
-        ANSIBLE_IP = ""
-        PRI_KEY_DIR = ""
-        PRI_KEY_FILE_NAME = ""
     }
 }
 
