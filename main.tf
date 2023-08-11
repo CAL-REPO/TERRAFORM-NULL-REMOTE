@@ -90,16 +90,13 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     }
 }
 
-data "external" "REMOTE_SEND_FILE_DATA" {
-    count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
-    depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
+# data "external" "REMOTE_SEND_FILE_DATA" {
+#     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
+#     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
 
-    program = ["bash", "-c", "cat ${var.REMOTE_SEND_FILEs[count.index].SOURCE}"]
-}
+#     program = ["bash", "-c", "cat ${var.REMOTE_SEND_FILEs[count.index].SOURCE}"]
+# }
 
-output "external_data" {
-    value = tostring("${data.external.REMOTE_SEND_FILE_DATA[*].result}")
-}
 
 resource "null_resource" "REMOTE_SEND_FILE" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
