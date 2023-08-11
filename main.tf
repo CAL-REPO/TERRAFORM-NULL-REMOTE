@@ -95,7 +95,7 @@ data "template_file" "REMOTE_SEND_FILE_DATA" {
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
 
     template = <<-EOF
-    ${file("${var.INS_UDs.FILEs[count.index].SOURCE}")}
+    ${file("${var.REMOTE_SEND_FILEs[count.index].SOURCE}")}
     EOF
 }
 
