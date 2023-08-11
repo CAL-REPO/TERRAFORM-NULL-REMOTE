@@ -61,6 +61,10 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
+    provisioner "remote-exec" {
+        inline = ["if [ ! -d ${dirname(var.REMOTE_CREATE_FILEs[count.index].DESTINATION)} ]; then mkdir -p ${dirname(var.REMOTE_CREATE_FILEs[count.index].DESTINATION)}; fi"]
+    }
+
     provisioner "file" {
         destination = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
         content = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
@@ -86,6 +90,10 @@ resource "null_resource" "REMOTE_SEND_FILE" {
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
+    provisioner "remote-exec" {
+        inline = ["if [ ! -d ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)} ]; then mkdir -p ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)}; fi"]
+    }
+
     provisioner "file" {
         source = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         destination = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
@@ -102,7 +110,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
 
 resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     count = (length(var.REMOTE_EXECUTE_COMMAND) > 0 ? 1 : 0)
-    depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND, null_resource.REMOTE_CREATE_FILE, null_resource.REMOTE_SEND_FILE ]
+    depends_on = [ null_resource.REMOTE_CREATE_FILE, null_resource.REMOTE_SEND_FILE ]
 
     connection {
         host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
