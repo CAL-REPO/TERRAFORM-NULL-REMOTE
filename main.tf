@@ -110,7 +110,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     triggers = {
-        SOURCE = "${var.REMOTE_SEND_FILEs[count.index].CONTENT}"
+        SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
         COMMAND = jsonencode("${var.REMOTE_SEND_FILEs[count.index].COMMAND}")
     }
