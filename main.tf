@@ -17,28 +17,12 @@ resource "null_resource" "BASE_RESOURCE_FOR_REMOTE_EXECUTION" {
     provisioner "local-exec" {
         interpreter = ["bash", "-c"]
         command = <<-EOF
-        if [ ! -z "${var.LOCAL_HOST_PRI_KEY_FILE_PATH}" ]; then
-            if [ ! -f "${var.LOCAL_HOST_PRI_KEY_FILE_PATH}" ]; then
-                echo "\"${var.LOCAL_HOST_PRI_KEY_FILE_PATH}\" file is not exists."
-                exit 1
-            fi
-        else
-            echo "Variable \"LOCAL_HOST_PRI_KEY_FILE_PATH\" is not set."
+        if [ ! -f ${var.LOCAL_HOST_PRI_KEY_FILE} ]; then
+            echo "\"LOCAL_HOST_PRI_KEY_FILE_PATH\" file is not exists."
             exit 1
         fi
-
-        if [ -z ${var.REMOTE_HOST.USER} ]; then
-            echo "Variable \"REMOTE_HOST.USER\" is not set."
-            exit 1
-        fi
-
-        if [ -z ${var.REMOTE_HOST.EXTERNAL_IP} ]; then
-            echo "Variable \"REMOTE_HOST.EXTERNAL_IP\" is not set."
-            exit 1
-        fi
-
         while true; do
-            if ssh -q -o "StrictHostKeyChecking=no" -o "PreferredAuthentications=publickey" -i "$LOCAL_HOST_PRI_KEY_FILE_PATH" "${var.REMOTE_HOST.USER}@${var.REMOTE_HOST.EXTERNAL_IP}" exit; then
+            if ssh -q -o "StrictHostKeyChecking=no" -o "PreferredAuthentications=publickey" -i "${var.LOCAL_HOST_PRI_KEY_FILE}" "${var.REMOTE_HOST.USER}@${var.REMOTE_HOST.EXTERNAL_IP}" exit; then
                 echo "SSH connection is now available. Remote PC has rebooted successfully."
                 break
             else
