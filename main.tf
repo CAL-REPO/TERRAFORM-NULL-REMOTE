@@ -34,9 +34,14 @@ resource "null_resource" "BASE_RESOURCE_FOR_REMOTE_EXECUTION" {
     }
 }
 
-resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
-    count = (length(var.REMOTE_PRE_EXECUTE_COMMAND) > 0 ? 1 : 0)
+resource "null_resource" "REMOTE_PRE_EXECUTEs" {
+    count = (length(var.REMOTE_PRE_EXECUTEs) > 0 ? length(var.REMOTE_PRE_EXECUTEs) : 0)
     depends_on = [ null_resource.BASE_RESOURCE_FOR_REMOTE_EXECUTION ]
+
+    triggers = {
+        always_run = try("${var.REMOTE_PRE_EXECUTEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
+        COMMAND = base64encode(join(",", "${var.REMOTE_PRE_EXECUTEs[count.index].COMMAND}"))
+    }
 
     connection {
         host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
@@ -45,21 +50,18 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
-    triggers = {
-        COMMAND = base64encode(join(",", "${var.REMOTE_PRE_EXECUTE_COMMAND}"))
-    }
-
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_PRE_EXECUTE_COMMAND}"
+        inline = "${var.REMOTE_PRE_EXECUTEs[count.index].COMMAND}"
     }
 
 }
 
-resource "null_resource" "REMOTE_CREATE_FILE" {
+resource "null_resource" "REMOTE_CREATE_FILEs" {
     count = (length(var.REMOTE_CREATE_FILEs) > 0 ? length(var.REMOTE_CREATE_FILEs) : 0)
-    depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
+    depends_on = [ null_resource.REMOTE_PRE_EXECUTEs ]
 
     triggers = {
+        always_run = try("${var.REMOTE_CREATE_FILEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
         CONTENT = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
         DESTINATION = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
         COMMAND = base64encode(join(",", "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"))
@@ -92,28 +94,28 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
 
 # data "external" "REMOTE_SEND_FILE_DATA" {
 #     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
-#     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
+#     depends_on = [ null_resource.REMOTE_PRE_EXECUTEs ]
 
 #     program = ["bash", "-c", "cat ${var.REMOTE_SEND_FILEs[count.index].SOURCE}"]
 # }
 
 
-resource "null_resource" "REMOTE_SEND_FILE" {
+resource "null_resource" "REMOTE_SEND_FILEs" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
-    depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
+    depends_on = [ null_resource.REMOTE_PRE_EXECUTEs ]
+
+    triggers = {
+        always_run  = try("${var.REMOTE_SEND_FILEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
+        SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
+        DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
+        COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
+    }
 
     connection {
         host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
         type        = "ssh"
         user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
-    }
-
-    triggers = {
-        # SOURCE_DATA = tostring("${data.external.REMOTE_SEND_FILE_DATA[count.index].result}")
-        SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
-        DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
-        COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
     }
 
     provisioner "remote-exec" {
@@ -135,9 +137,14 @@ resource "null_resource" "REMOTE_SEND_FILE" {
 
 }
 
-resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
-    count = (length(var.REMOTE_EXECUTE_COMMAND) > 0 ? 1 : 0)
-    depends_on = [ null_resource.REMOTE_CREATE_FILE, null_resource.REMOTE_SEND_FILE ]
+resource "null_resource" "REMOTE_EXECUTEs" {
+    count = (length(var.REMOTE_EXECUTEs) > 0 ? length(var.REMOTE_EXECUTEs) : 0)
+    depends_on = [ null_resource.REMOTE_CREATE_FILEs, null_resource.REMOTE_SEND_FILEs ]
+
+    triggers = {
+        always_run  = try("${var.REMOTE_EXECUTEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
+        COMMAND = base64encode(join(",", "${var.REMOTE_EXECUTEs[count.index].COMMAND}"))
+    }
 
     connection {
         host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
@@ -146,11 +153,7 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
         private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
-    triggers = {
-        COMMAND = base64encode(join(",", "${var.REMOTE_EXECUTE_COMMAND}"))
-    }
-
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_EXECUTE_COMMAND}"
+        inline = "${var.REMOTE_EXECUTEs[count.index].COMMAND}"
     }
 }
