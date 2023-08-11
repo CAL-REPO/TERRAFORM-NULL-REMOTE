@@ -62,7 +62,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     triggers = {
         CONTENT = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
         DESTINATION = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
-        COMMAND = base64encode("${var.REMOTE_CREATE_FILEs[count.index].COMMAND}")
+        COMMAND = base64encode(join(",", "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"))
     }
 
     connection {
@@ -104,7 +104,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     triggers = {
         SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
-        COMMAND = base64encode("${var.REMOTE_SEND_FILEs[count.index].COMMAND}")
+        COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
     }
 
     provisioner "remote-exec" {
