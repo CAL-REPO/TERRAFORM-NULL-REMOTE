@@ -90,6 +90,15 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     }
 }
 
+data "template_file" "REMOTE_SEND_FILE_DATA" {
+    count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
+    depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
+
+    template = <<-EOF
+    ${file("${var.INS_UDs.FILEs[count.index].SOURCE}")}
+    EOF
+}
+
 resource "null_resource" "REMOTE_SEND_FILE" {
     count = (length(var.REMOTE_SEND_FILEs) > 0 ? length(var.REMOTE_SEND_FILEs) : 0)
     depends_on = [ null_resource.REMOTE_PRE_EXECUTE_COMMAND ]
@@ -102,6 +111,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     triggers = {
+        SOURCE_DATA = "${data.template_file.REMOTE_SEND_FILE_DATA[count.index]}"
         SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
         COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
