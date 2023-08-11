@@ -109,7 +109,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     }
 
     triggers = {
-        SOURCE_DATA = "${data.external.REMOTE_SEND_FILE_DATA.result[count.index]}"
+        SOURCE_DATA = "${data.external.REMOTE_SEND_FILE_DATA[count.index].result}"
         SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
         COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
