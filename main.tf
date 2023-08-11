@@ -46,7 +46,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     }
 
     triggers = {
-        COMMAND = jsonencode("${var.REMOTE_PRE_EXECUTE_COMMAND[count.index]}")
+        COMMAND = "${var.REMOTE_PRE_EXECUTE_COMMAND[count.index]}"
     }
 
     # provisioner "remote-exec" {
@@ -54,7 +54,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTE_COMMAND" {
     # }
 
     provisioner "remote-exec" {
-        inline = jsondecode("${self.triggers.COMMAND}")
+        inline = [jsondecode("${self.triggers.COMMAND}")]
     }
 
 }
@@ -94,7 +94,7 @@ resource "null_resource" "REMOTE_CREATE_FILE" {
     # }
 
     provisioner "remote-exec" {
-        inline = jsondecode("${self.triggers.COMMAND}")
+        inline = [jsondecode("${self.triggers.COMMAND}")]
     }
 }
 
@@ -133,7 +133,7 @@ resource "null_resource" "REMOTE_SEND_FILE" {
     # }
 
     provisioner "remote-exec" {
-        inline = jsondecode("${self.triggers.COMMAND}")
+        inline = [jsondecode("${self.triggers.COMMAND}")]
     }
 
 }
@@ -162,6 +162,6 @@ resource "null_resource" "REMOTE_EXECUTE_COMMAND" {
     # }
 
     provisioner "remote-exec" {
-        inline = jsondecode("${self.triggers.COMMAND}")
+        inline = [jsondecode("${self.triggers.COMMAND}")]
     }
 }
