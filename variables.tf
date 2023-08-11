@@ -25,8 +25,9 @@ variable "REMOTE_HOST" {
 variable "REMOTE_PRE_EXECUTEs" {
     type = list(object({
         ALWAYS = optional(bool)
-        COMMAND = list(string)
+        COMMANDs = list(string)
     }))
+    
     default = []
 }
 
@@ -35,7 +36,7 @@ variable "REMOTE_CREATE_FILEs" {
         ALWAYS = optional(bool)
         CONTENT = string
         DESTINATION = string
-        COMMAND = optional(list(string))
+        COMMANDs = optional(list(string))
     }))
 
     default = []
@@ -46,7 +47,7 @@ variable "REMOTE_SEND_FILEs" {
         ALWAYS = optional(bool)
         SOURCE = string
         DESTINATION = string
-        COMMAND = optional(list(string))
+        COMMANDs = optional(list(string))
     }))
 
     default = []
@@ -55,7 +56,8 @@ variable "REMOTE_SEND_FILEs" {
 variable "REMOTE_EXECUTEs" {
     type = list(object({
         ALWAYS = optional(bool)
-        COMMAND = list(string)
+        COMMANDs = list(string)
     }))
+
     default = []
 }

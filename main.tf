@@ -40,7 +40,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTEs" {
 
     triggers = {
         always_run = try("${var.REMOTE_PRE_EXECUTEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
-        COMMAND = base64encode(join(",", "${var.REMOTE_PRE_EXECUTEs[count.index].COMMAND}"))
+        COMMANDs = base64encode(join(",", "${var.REMOTE_PRE_EXECUTEs[count.index].COMMANDs}"))
     }
 
     connection {
@@ -51,7 +51,7 @@ resource "null_resource" "REMOTE_PRE_EXECUTEs" {
     }
 
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_PRE_EXECUTEs[count.index].COMMAND}"
+        inline = "${var.REMOTE_PRE_EXECUTEs[count.index].COMMANDs}"
     }
 
 }
@@ -64,7 +64,7 @@ resource "null_resource" "REMOTE_CREATE_FILEs" {
         always_run = try("${var.REMOTE_CREATE_FILEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
         CONTENT = "${var.REMOTE_CREATE_FILEs[count.index].CONTENT}"
         DESTINATION = "${var.REMOTE_CREATE_FILEs[count.index].DESTINATION}"
-        COMMAND = base64encode(join(",", "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"))
+        COMMANDs = base64encode(join(",", "${var.REMOTE_CREATE_FILEs[count.index].COMMANDs}"))
     }
 
     connection {
@@ -88,7 +88,7 @@ resource "null_resource" "REMOTE_CREATE_FILEs" {
     }
 
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMAND}"
+        inline = "${var.REMOTE_CREATE_FILEs[count.index].COMMANDs}"
     }
 }
 
@@ -108,7 +108,7 @@ resource "null_resource" "REMOTE_SEND_FILEs" {
         always_run  = try("${var.REMOTE_SEND_FILEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
         SOURCE = "${var.REMOTE_SEND_FILEs[count.index].SOURCE}"
         DESTINATION = "${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
-        COMMAND = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"))
+        COMMANDs = base64encode(join(",", "${var.REMOTE_SEND_FILEs[count.index].COMMANDs}"))
     }
 
     connection {
@@ -132,9 +132,8 @@ resource "null_resource" "REMOTE_SEND_FILEs" {
     }
 
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_SEND_FILEs[count.index].COMMAND}"
+        inline = "${var.REMOTE_SEND_FILEs[count.index].COMMANDs}"
     }
-
 }
 
 resource "null_resource" "REMOTE_EXECUTEs" {
@@ -143,7 +142,7 @@ resource "null_resource" "REMOTE_EXECUTEs" {
 
     triggers = {
         always_run  = try("${var.REMOTE_EXECUTEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
-        COMMAND = base64encode(join(",", "${var.REMOTE_EXECUTEs[count.index].COMMAND}"))
+        COMMANDs = base64encode(join(",", "${var.REMOTE_EXECUTEs[count.index].COMMANDs}"))
     }
 
     connection {
@@ -154,6 +153,6 @@ resource "null_resource" "REMOTE_EXECUTEs" {
     }
 
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_EXECUTEs[count.index].COMMAND}"
+        inline = "${var.REMOTE_EXECUTEs[count.index].COMMANDs}"
     }
 }
