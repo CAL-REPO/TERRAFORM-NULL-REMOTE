@@ -137,12 +137,12 @@ resource "null_resource" "REMOTE_SEND_FILEs" {
 }
 
 resource "null_resource" "REMOTE_EXECUTEs" {
-    count = (length(var.REMOTE_EXECUTEs) > 0 ? length(var.REMOTE_EXECUTEs) : 0)
+    for_each = { for INDEX, EXECUTE in var.REMOTE_EXECUTEs : INDEX => EXECUTE }
     depends_on = [ null_resource.REMOTE_CREATE_FILEs, null_resource.REMOTE_SEND_FILEs ]
 
     triggers = {
-        always_run  = try("${var.REMOTE_EXECUTEs[count.index].ALWAYS}" == true ? timestamp() : null, null)
-        COMMANDs = base64encode(join(",", "${var.REMOTE_EXECUTEs[count.index].COMMANDs}"))
+        always_run = try("${each.value.ALWAYS}" == true ? timestamp() : null, null)
+        COMMANDs   = base64encode(join(",", "${each.value.COMMANDs}"))
     }
 
     connection {
@@ -153,6 +153,6 @@ resource "null_resource" "REMOTE_EXECUTEs" {
     }
 
     provisioner "remote-exec" {
-        inline = "${var.REMOTE_EXECUTEs[count.index].COMMANDs}"
+        inline = "${each.value.COMMANDs}"
     }
 }
