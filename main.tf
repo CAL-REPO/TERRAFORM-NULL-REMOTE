@@ -119,7 +119,10 @@ resource "null_resource" "REMOTE_SEND_FILEs" {
     }
 
     provisioner "remote-exec" {
-        inline = ["mkdir -p ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)}"]
+        inline = [
+            "mkdir -p ${dirname(var.REMOTE_SEND_FILEs[count.index].DESTINATION)}",
+            "sudo rm -rf ${var.REMOTE_SEND_FILEs[count.index].DESTINATION}"
+        ]
     }
 
     provisioner "file" {
