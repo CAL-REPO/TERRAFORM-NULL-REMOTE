@@ -156,6 +156,6 @@ resource "null_resource" "REMOTE_EXECUTEs" {
     }
 
     provisioner "remote-exec" {
-        inline = split(",", base64decode("${each.value.COMMANDs}"))
+        inline = split(",", base64decode("${self.triggers.COMMANDs}"))
     }
 }
