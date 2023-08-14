@@ -55,6 +55,9 @@ variable "REMOTE_SEND_FILEs" {
 
 variable "REMOTE_EXECUTEs" {
     type = list(object({
+        LOCAL_PRI_KEY_FILE = string
+        REMOTE_USER = string
+        REMOTE_IP = string
         ALWAYS = optional(bool)
         COMMANDs = list(string)
     }))

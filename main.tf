@@ -137,22 +137,25 @@ resource "null_resource" "REMOTE_SEND_FILEs" {
 }
 
 resource "null_resource" "REMOTE_EXECUTEs" {
-    for_each = { for INDEX, EXECUTE in var.REMOTE_EXECUTEs : INDEX => EXECUTE }
+    for_each = { for INDEX, REMOTE_EXECUTE in var.REMOTE_EXECUTEs : INDEX => REMOTE_EXECUTE }
     depends_on = [ null_resource.REMOTE_CREATE_FILEs, null_resource.REMOTE_SEND_FILEs ]
 
     triggers = {
         always_run = try("${each.value.ALWAYS}" == true ? timestamp() : null, null)
+        LOCAL_PRI_KEY_FILE = "${each.value.LOCAL_PRI_KEY_FILE}"
+        REMOTE_USER = "${each.value.REMOTE_USER}"
+        REMOTE_IP = "${each.value.REMOTE_IP}"
         COMMANDs   = base64encode(join(",", "${each.value.COMMANDs}"))
     }
 
     connection {
-        host        = "${var.REMOTE_HOST.EXTERNAL_IP}"
+        host        = "${self.triggers.REMOTE_IP}"
         type        = "ssh"
-        user        = "${var.REMOTE_HOST.USER}"  # Update with your SSH username
-        private_key = file("${var.LOCAL_HOST_PRI_KEY_FILE}")  # Update with the path to your private key file
+        user        = "${self.triggers.REMOTE_USER}"  # Update with your SSH username
+        private_key = file("${self.triggers.LOCAL_PRI_KEY_FILE}")  # Update with the path to your private key file
     }
 
     provisioner "remote-exec" {
-        inline = "${each.value.COMMANDs}"
+        inline = "${self.triggers.COMMANDs}"
     }
 }
